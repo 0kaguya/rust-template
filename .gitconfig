@@ -1,0 +1,5 @@
+[filter "rustfmt"]
+	clean = rustfmt
+
+[filter "taplo"]
+	clean = taplo fmt -

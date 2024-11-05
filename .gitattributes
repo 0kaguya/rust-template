@@ -1,0 +1,3 @@
+# -*- mode: conf-unix -*-
+*.rs  	    filter=rustfmt
+*.toml	    filter=taplo
