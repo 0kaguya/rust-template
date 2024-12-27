@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# set project name to directory name
+tmp=$(mktemp); trap "rm $tmp" EXIT SIGINT
+awk -v name=$(basename $(pwd)) \
+	'/^name =/ { printf "name = \"%s\"\n", name; next } { print $0 }' \
+	Cargo.toml >$tmp
+tee Cargo.toml <$tmp >/dev/null
+
+# remove template's readme file
+rm README.md
+
 # git filters.
 git config --local include.path ../.gitconfig
 
@@ -13,16 +23,16 @@ if [[ -z $(grep "$HOME/.cargo/bin" <<< $PATH) ]]; then
     PATH=~/.cargo/bin:$PATH
 fi
 
-# add these components.
+# add some rustup components.
 for component in rust-analyzer rustfmt clippy; do
     rustup component list --installed | grep -q $component ||
 	rustup component add $component
 done
 
-# use sccache for optimized compile time & space usage.
+# sccache optimizes space usage & compile time.
 command -v sccache >&- ||
     cargo install sccache --locked
 
-# use taplo for toml formatting.
+# taplo formats .toml files.
 command -v taplo >&- ||
-    cargo install taplo-cli --locked
+    cargo install taplo-cli --features lsp --locked
